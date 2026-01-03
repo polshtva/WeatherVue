@@ -1,17 +1,20 @@
 <script setup>
 
-import {ref, reactive, computed} from 'vue';
+import {ref, reactive, computed, provide, watch, onMounted} from 'vue';
 import PanelRight from './componets/PanelRight.vue';
+import { API_ENDPOINT, cityProvide } from './constants';
+import PanelLeft from './componets/PanelLeft.vue';
 
   // let savedCity = ref('Moscow');
   
-  const API_ENDPOINT ="https://api.weatherapi.com/v1";
+ 
 
 
   let data = ref(null);
   let error = ref();
   let activeIndex = ref(0);
-
+  let city = ref("Тюмень")
+  provide(cityProvide, city);
 
   async function getCity(city){
     // savedCity.value = city
@@ -34,15 +37,24 @@ import PanelRight from './componets/PanelRight.vue';
    
    console.log(data.value);
   }
+
+
+  watch(city, () => {
+    getCity(city.value);
+  })
+
+  onMounted(() => {
+    getCity(city.value);
+  })
 </script>
 
 <template>
   <main class="main">
     <div class="left">
-
+      <PanelLeft v-if="data" :day-data="data.forecast.forecastday[activeIndex]" :data="data"/>
     </div>
     <div class="right">
-     <PanelRight :data="data" :error="error" :active-index="activeIndex" @select-index="(i) =>  activeIndex=i" @select-city="getCity"/>
+     <PanelRight :data="data" :error="error" :active-index="activeIndex" @select-index="(i) =>  activeIndex=i"/>
       </div>
 
   </main>
@@ -68,4 +80,13 @@ import PanelRight from './componets/PanelRight.vue';
       border-radius: 0 25px 25px 0;
     }
    
+   @media (max-width:1110px){
+     .main{
+    flex-direction: column;
+    }
+     .left{
+      border:  0 25px 25px 0;
+    }
+    
+   }
 </style>

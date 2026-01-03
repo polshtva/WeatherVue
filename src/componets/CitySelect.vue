@@ -1,23 +1,21 @@
 <script setup>
     import Button from './Button.vue';
     import IconComponent from '../icons/IconLocation.vue';  
-    import {ref, reactive, onMounted,onUpdated, watch, watchEffect, onWatcherCleanup} from 'vue';
+    import {ref, reactive, onMounted,onUpdated, watch, watchEffect, onWatcherCleanup, inject} from 'vue';
     import Input from './Input.vue';
+import { cityProvide } from '../constants';
 
 
     // onUpdated(() => {
     //     console.log(city.value);
     // })
    
- 
-   const emit =  defineEmits({
-    selectCity(payload){
-        console.log(`val payload: ${payload}`)
-        return payload ? true : false
-    }   
-   })
+        
+    const city = inject(cityProvide);
+    // console.log(city.value);
+    const inputVal = ref(city.value)
 
-   let city = ref("Москва")
+
 
    let isEditer = ref(false);
 
@@ -36,16 +34,14 @@
 
    function select(){
     isEditer.value =false;
-    emit('selectCity', city.value)
+    // emit('selectCity', city.value)
+    city.value = inputVal.value;
    }
 
     function edit(){
     isEditer.value =true;
    }
 
-    onMounted(() => {
-     emit('selectCity', city.value)
-  })
 
 
 
@@ -55,7 +51,7 @@
 <div class="city-select">
         
     <div v-if="isEditer" class="city-input">
-    <Input placeholder="Введите город" v-model="city" @keyup.enter="select()" v-focus></Input>
+    <Input placeholder="Введите город" v-model="inputVal" @keyup.enter="select()" v-focus></Input>
    
     <Button @click="select()">Сохранить</Button>
     </div> 

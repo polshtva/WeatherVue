@@ -4,6 +4,7 @@ import CitySelect from './CitySelect.vue';
 import DayCard from './DayCard.vue';
 import Error from './Error.vue';
 import Stat from './Stat.vue';
+import { errorMap } from '../constants';
 
 
   const {data, error, activeIndex} = defineProps({
@@ -12,11 +13,11 @@ import Stat from './Stat.vue';
     activeIndex: Number
   })
 
-  console.log(data);
+  // console.log(data);
 
   const emit = defineEmits(['select-index', 'select-city'])
 
-  const errorMap = new Map([[1006, "Указанный город не найден"]])
+ 
 
   const errorDisplay = computed(() => {
     return errorMap.get(error.error?.code)
@@ -27,15 +28,15 @@ import Stat from './Stat.vue';
     return [
       {
         label: 'Влажность',
-        stat:  data.current.humidity + " %"
+        stat:  data.forecast.forecastday[activeIndex].day.avghumidity + " %"
       },
       {
-        label: 'Облачность',
-        stat:  data.current.cloud + " %"
+        label: 'Вероятность дождя',
+        stat:  data.forecast.forecastday[activeIndex].day.daily_chance_of_rain + " %"
       },
        {
         label: 'Ветер',
-        stat:  data.current.wind_kph + " км/ч"
+        stat:  data.forecast.forecastday[activeIndex].day.maxwind_kph + " км/ч"
       },
     ] 
   })
@@ -47,7 +48,7 @@ import Stat from './Stat.vue';
       <Error v-if="error" :error="errorDisplay"/>
     
        <div v-if="data && data.current" class="stat-list">
-        <div>
+        <div class="stats">
           <Stat v-for="item in statModified" v-bind="item" :key="item.label"></Stat>
         </div>
     
@@ -63,7 +64,7 @@ import Stat from './Stat.vue';
     
       </div>
     
-    <CitySelect @select-city="(city) => emit('select-city', city)"/> 
+    <CitySelect /> 
 </template>
 
 <style scoped>
@@ -78,5 +79,10 @@ import Stat from './Stat.vue';
       flex-direction: column;
       gap: 80px;
       margin-bottom: 70px;
+    }
+    .stats{
+      display: flex;  
+      flex-direction: column;
+      row-gap: 16px;
     }
 </style>
